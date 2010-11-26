@@ -59,6 +59,27 @@ TXT
     end
   end
   
+  describe "copy" do
+    it "should provide a new copy of the object and new copy of row data" do
+      board = Sleuthoku::Board.new
+      board.rows = [
+        [7, 6, 5, 1, 3, 8, 2, 9, 4],
+        [4, 9, 1, 2, 7, 6, 5, 8, 3],
+        [2, 8, 3, 4, 5, 9, 6, 1, 7],
+        [9, 1, 4, 5, 8, 7, 3, 2, 6],
+        [8, 5, 7, 3, 6, 2, 1, 4, 9],
+        [3, 2, 6, 9, 4, 1, 7, 5, 8],
+        [1, 7, 2, 8, 9, 3, 4, 6, 5],
+        [6, 4, 8, 7, 2, 5, 9, 3, 1],
+        [5, 3, 9, 6, 1, 4, 8, 7, 2]
+      ]
+      copy = board.copy
+      copy.should be_a(Sleuthoku::Board)
+      copy.should_not == board
+      copy.rows.object_id.should_not == board.rows.object_id
+    end
+  end
+  
   describe "section" do
     it "should map rows to sections" do
       board = Sleuthoku::Board.new

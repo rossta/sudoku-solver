@@ -15,6 +15,12 @@ module Sleuthoku
         yield(self)
       end
     end
+    
+    def copy
+      new_board = clone
+      new_board.rows = rows.map { |row| row.clone }
+      new_board
+    end
 
     def [](row)
       @rows[row]
