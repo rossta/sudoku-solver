@@ -19,6 +19,10 @@ module Sleuthoku
     def [](row)
       @config[row]
     end
+    
+    def rows
+      @config
+    end
 
   end
 end
