@@ -1,3 +1,4 @@
+  RANGE = (1..9)
 module Sleuthoku
 
   class UnsolvableSudokuError < Exception
@@ -13,7 +14,6 @@ module Sleuthoku
       solver.solution
     end
 
-    RANGE = (1..9)
 
     attr_accessor :solution, :board, :data, :changing
     def initialize(data)
@@ -22,132 +22,74 @@ module Sleuthoku
     end
 
     def solve!
-      basic_sudoku
+      begin
+        depth = 0
+        @board = speculative_sudoku(@board, depth)
+        if !@board.is_a?(Board) || !@board.complete?
+          puts "Puzzle can't be solved"
+          puts @board.rows.inspect
+        end
+      end
     end
 
-    def changing!
-      @changing = true
+    def speculative_sudoku(state, depth)
+      basic_sudoku(state)
+      puts depth
+      depth += 1
+      (0..8).each do |j|
+        if state.complete?
+          require "ruby-debug"; debugger
+          break 
+        end
+        (0..8).each do |k|
+          next if state[j][k] > 0
+          require "ruby-debug"; debugger
+          
+          candidates = state.candidates(j, k)
+          raise UnsolvableSudokuError if candidates.empty?
+          candidates.each do |candidate|
+            clone       = state.clone
+            clone[j][k] = candidate
+            begin
+              clone = speculative_sudoku(clone, depth)
+            rescue UnsolvableSudokuError
+            end
+            if clone.complete?
+              state = clone
+              break
+            end
+          end
+        end
+      end
+      state
     end
 
-    def not_changing!
-      @changing = false
+    def basic_sudoku(board)
+      board.changing!
+      while board.changing?
+        board.not_changing!
+        board.rows.each_with_index do |row_values, j|
+          row_values.each_with_index do |col_values, k|
+            val = board[j][k]
+            next if val > 0
+
+            candidates = board.candidates(j, k)
+
+            case candidates.size
+            when 0
+              raise UnsolvableSudokuError
+            when 1
+              board[j][k] = candidates.pop
+              board.changing!
+            end
+          end
+        end
+      end
+      board
     end
 
-    def changing?
-      @changing
-    end
-    
     def solution
       @board.rows
     end
-
-    def basic_sudoku
-      changing!
-      while changing?
-        not_changing!
-        @board.rows.each_with_index do |row_values, j|
-          row_values.each_with_index do |col_values, k|
-            val = @board[j][k]
-
-            row = strip_row(k, @board[j])
-            col = strip_col(j, k, @board.rows)
-            sec = strip_section(j, k, @board.rows)
-
-            family    = row + col + sec
-            candiates = RANGE.to_a - family
-            
-            if val > 0
-              raise ViolatedSudokuError if family.include? val
-            else
-              case candiates.size
-              when 0
-                raise UnsolvableSudokuError
-              when 1
-                @board[j][k] = candiates.pop
-                changing!
-              end
-            end
-          end
-        end
-      end
-    end
-
-    def strip_row(col_i, row)
-      clone = row.clone
-      clone.delete_at(col_i)
-      clone
-    end
-
-    def strip_col(row_i, col_i, rows)
-      col = rows.map { |r| r[col_i] }
-      col.delete_at(row_i)
-      col
-    end
-
-    def strip_section(row_i, col_i, rows)
-      sec = [].tap do |s|
-        3.times do |l|
-          3.times do |m|
-            s << rows[((row_i / 3) * 3) + l][((col_i / 3) * 3) + m]
-          end
-        end
-      end
-      sec -= [sec[((row_i % 3) * 3) + (col_i % 3)]]
-      sec
-    end
-
-    def solve_1!
-      while @solution.any? { |row| row.any? { |val| val < 1 } } do
-        improved = false
-        @solution.each_with_index do |row, j|
-          row.each_with_index do |val, k|
-            if val > 0
-              @universe[j][k] = [val]
-              next
-            end
-
-            cols = @solution.map { |r| r[k] }
-            sect = section(j, k)
-
-            @universe[j][k] = @universe[j][k] - row - cols - sect
-
-            if @universe[j][k].size == 1
-              @solution[j][k] = @universe[j][k].first
-              improved = true
-              break
-            end
-
-            if @universe[j][k].size == 0
-              raise UnsolvableSudokuError
-            end
-
-          end
-        end
-        # puts @solution.map { |row| row.join(" ") }.join("\n") + "\n"
-        if !improved
-          break
-        end
-      end
-      @solution
-    end
-
-    def section(row_index, col_index, set = @solution)
-    end
-
-    def get_universe
-      [].tap do |all|
-        9.times do
-          all << [].tap do |row|
-            9.times do |j|
-              row[j] = []
-              9.times do |k|
-                row[j][k] = k + 1
-              end
-            end
-          end
-        end
-      end
-    end
-
   end
 end
