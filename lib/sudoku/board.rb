@@ -11,9 +11,7 @@ module Sudoku
     attr_accessor :rows
     def initialize
       @rows = []
-      if block_given?
-        yield(self)
-      end
+      yield(self) if block_given?
     end
     
     def copy
@@ -35,9 +33,9 @@ module Sudoku
     
     def columns
       [].tap do |cols|
-        (0..8).each do |j|
+        INDICES.each do |j|
           col = []
-          (0..8).each do |k|
+          INDICES.each do |k|
             col << rows[k][j]
           end
           cols << col

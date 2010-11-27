@@ -1,10 +1,8 @@
-  RANGE = (1..9)
 module Sudoku
+  RANGE = (1..9)
+  INDICES = (0..8)
 
   class UnsolvableSudokuError < Exception
-  end
-
-  class ViolatedSudokuError < Exception
   end
 
   class Solver
@@ -13,7 +11,6 @@ module Sudoku
       solver.solve!
       solver.solution
     end
-
 
     attr_accessor :solution, :board, :data, :changing
     def initialize(data)
@@ -30,27 +27,27 @@ module Sudoku
       board = basic_sudoku(board)
       return board if board.complete?
 
-        (0..8).each do |j|
-          (0..8).each do |k|
-            next if board[j][k] > 0
-            candidates = board.candidates(j, k)
+      INDICES.each do |j|
+        INDICES.each do |k|
+          next if board[j][k] > 0
+          candidates = board.candidates(j, k)
 
-            candidates.each do |candidate|
-              clone  = board.copy
-              clone[j][k] = candidate
+          candidates.each do |candidate|
+            clone  = board.copy
+            clone[j][k] = candidate
 
-              begin
-                clone = solve_board(clone)
-              rescue UnsolvableSudokuError
-                next
-              end
+            begin
+              clone = solve_board(clone)
+            rescue UnsolvableSudokuError
+              next
+            end
 
-              if clone.complete?
-                board = clone
-              end
+            if clone.complete?
+              board = clone
             end
           end
         end
+      end
       board
     end
 
@@ -58,8 +55,8 @@ module Sudoku
       board.changing!
       while board.changing?
         board.not_changing!
-        (0..8).each do |j|
-          (0..8).each do |k|
+        INDICES.each do |j|
+          INDICES.each do |k|
             val = board[j][k]
             next if val > 0
 
