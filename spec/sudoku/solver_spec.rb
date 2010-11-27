@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Sleuthoku::Solver do
+describe Sudoku::Solver do
   before(:each) do
     @data_1 = <<-TXT
 7 0 5 0 0 0 2 9 4
@@ -65,20 +65,20 @@ TXT
 
   describe "self.solve" do
     it "should fill in missing values for board" do
-      Sleuthoku::Solver.solve(@data_1).should == @solution_1
+      Sudoku::Solver.solve(@data_1).should == @solution_1
     end
   end
   
   describe "solve!" do
     before(:each) do
-      @solver = Sleuthoku::Solver.new(@data_1)
+      @solver = Sudoku::Solver.new(@data_1)
     end
     it "should fill in missing values for board 1" do
       @solver.solve!
       @solver.solution.should == @solution_1
     end
     it "should fill in missing values for board 2" do
-      solver = Sleuthoku::Solver.new(@data_3)
+      solver = Sudoku::Solver.new(@data_3)
       solver.solve!
       solver.solution.should == @solution_3
     end
@@ -86,16 +86,11 @@ TXT
   
   describe "basic_sudoku" do
     before(:each) do
-      @solver = Sleuthoku::Solver.new(@data_1)
+      @solver = Sudoku::Solver.new(@data_1)
     end
     it "should raise error if unsolvable" do
       @solver.board[0][3] = 6
-      lambda { @solver.basic_sudoku(@solver.board) }.should raise_error(Sleuthoku::UnsolvableSudokuError)
-    end
-    it "should raise error if constraints broken" do
-      pending
-      @solver.board[0][1] = 7
-      lambda { @solver.solve! }.should raise_error(Sleuthoku::ViolatedSudokuError)
+      lambda { @solver.basic_sudoku(@solver.board) }.should raise_error(Sudoku::UnsolvableSudokuError)
     end
   end
 

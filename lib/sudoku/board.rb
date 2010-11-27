@@ -1,4 +1,4 @@
-module Sleuthoku
+module Sudoku
   class Board
     def self.build(data, opts = {})
       row_delim = opts[:row] || "\n"

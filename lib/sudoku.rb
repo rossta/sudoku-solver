@@ -1,10 +1,10 @@
 require "rubygems"
 
 %w[ board solver ].each do |file|
-  require "sleuthoku/#{file}"
+  require "sudoku/#{file}"
 end
 
-module Sleuthoku
+module Sudoku
   CONFIG_1 = <<-TXT
   7 0 5 0 0 0 2 9 4
   0 0 1 2 0 6 0 0 0

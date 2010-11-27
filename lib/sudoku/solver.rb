@@ -1,5 +1,5 @@
   RANGE = (1..9)
-module Sleuthoku
+module Sudoku
 
   class UnsolvableSudokuError < Exception
   end

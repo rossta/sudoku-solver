@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../lib/sleuthoku'
+require File.dirname(__FILE__) + '/../lib/sudoku'
 
 @board_1 = [
   [7, 0, 5, 0, 0, 0, 2, 9, 4],

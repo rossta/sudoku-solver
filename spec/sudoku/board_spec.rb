@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Sleuthoku::Board do
+describe Sudoku::Board do
   before(:each) do
     @data = <<-TXT
 7 0 5 0 0 0 2 9 4
@@ -16,12 +16,12 @@ TXT
   end
   describe "self.build" do
     it "should return a board" do
-      board = Sleuthoku::Board.build("1 2 3")
-      board.should be_a(Sleuthoku::Board)
+      board = Sudoku::Board.build("1 2 3")
+      board.should be_a(Sudoku::Board)
     end
     it "should build values with default delimeters" do
       values = @data.chomp.split("\n").map(&:split)
-      board = Sleuthoku::Board.build(@data.chomp)
+      board = Sudoku::Board.build(@data.chomp)
       values.each_with_index do |row, j|
         row.each_with_index do |value, k|
           board[j][k].should == value.to_i
@@ -31,7 +31,7 @@ TXT
     it "should build values with optional delimeters" do
       data    = @data.chomp.gsub("\n", "|").gsub(" ", ",")
       values  = @data.chomp.split("\n").map(&:split)
-      board   = Sleuthoku::Board.build(data, :row => "|", :val => ",")
+      board   = Sudoku::Board.build(data, :row => "|", :val => ",")
       values.each_with_index do |row, j|
         row.each_with_index do |value, k|
           board[j][k].should == value.to_i
@@ -42,7 +42,7 @@ TXT
   
   describe "columns" do
     it "should map rows to columns" do
-      board = Sleuthoku::Board.new
+      board = Sudoku::Board.new
       board.rows = [
         [7, 6, 5, 1, 3, 8, 2, 9, 4],
         [4, 9, 1, 2, 7, 6, 5, 8, 3],
@@ -61,7 +61,7 @@ TXT
   
   describe "copy" do
     it "should provide a new copy of the object and new copy of row data" do
-      board = Sleuthoku::Board.new
+      board = Sudoku::Board.new
       board.rows = [
         [7, 6, 5, 1, 3, 8, 2, 9, 4],
         [4, 9, 1, 2, 7, 6, 5, 8, 3],
@@ -74,7 +74,7 @@ TXT
         [5, 3, 9, 6, 1, 4, 8, 7, 2]
       ]
       copy = board.copy
-      copy.should be_a(Sleuthoku::Board)
+      copy.should be_a(Sudoku::Board)
       copy.should_not == board
       copy.rows.object_id.should_not == board.rows.object_id
     end
@@ -82,7 +82,7 @@ TXT
   
   describe "section" do
     it "should map rows to sections" do
-      board = Sleuthoku::Board.new
+      board = Sudoku::Board.new
       board.rows = [
         [7, 6, 5, 1, 3, 8, 2, 9, 4],
         [4, 9, 1, 2, 7, 6, 5, 8, 3],
@@ -110,12 +110,12 @@ TXT
   
   describe "complete?" do
     it "should return false if any values are unassigned" do
-      board = Sleuthoku::Board.new
+      board = Sudoku::Board.new
       board.complete?.should be_false
     end
     
     it "should return true if all values are assigned and valid" do
-      board = Sleuthoku::Board.new
+      board = Sudoku::Board.new
       board.rows = [
         [7, 6, 5, 1, 3, 8, 2, 9, 4],
         [4, 9, 1, 2, 7, 6, 5, 8, 3],
@@ -131,7 +131,7 @@ TXT
     end
     
     it "should return false if board not valid" do
-      board = Sleuthoku::Board.new
+      board = Sudoku::Board.new
       invalid = [
         [7, 7, 5, 1, 3, 8, 2, 9, 4],
         [4, 9, 1, 2, 7, 6, 5, 8, 3],
@@ -156,7 +156,7 @@ TXT
   
   describe "helpers" do
     before(:each) do
-      @board = Sleuthoku::Board.build(@data)
+      @board = Sudoku::Board.build(@data)
     end
     describe "strip_row" do
       it "should return all values in row except given col index" do
