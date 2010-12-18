@@ -1,0 +1,17 @@
+#! /usr/bin/env ruby
+
+lib_path = File.expand_path(File.dirname(__FILE__)) + "/../lib/"
+$LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
+
+require 'sudoku'
+
+filename = ARGV.shift
+
+raise "Please enter a valid filename" unless filename && File.exists?(filename)
+
+data = File.open(filename, "r").readlines.join
+
+soln = Sudoku::Solver.solve(data)
+
+puts soln.map { |row| row.join(" ") }.join("\n")
+
